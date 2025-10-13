@@ -1,0 +1,22 @@
+.table-row{
+    cursor: pointer;
+
+    &:focus{
+        user-select: none;
+    }
+
+    &:nth-child(even){
+        background-color: #e9ecef;
+    }
+
+    &:hover{
+        background-color: #ced4da;
+        border-bottom-left-radius: 5px;
+        border-bottom-right-radius: 5px;
+    }
+    
+    &:last-child{
+        border-bottom-left-radius: 5px;
+        border-bottom-right-radius: 5px;
+    }
+}

@@ -1,0 +1,28 @@
+.wrapper {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    gap: 5vh;
+        
+    .page-items {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        max-width: 70%;
+        min-width: 30%;
+        gap: 2vh;
+        margin-top: 5vh;
+        
+        .content-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            
+            .table {
+                width: 100%;
+            }
+        }
+    }
+}

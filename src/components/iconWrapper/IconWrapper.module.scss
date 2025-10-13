@@ -1,0 +1,31 @@
+.icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    & > * {
+        pointer-events: none;
+    }
+}
+
+.size-small {
+    width: 33px; 
+    height: 33px;
+}
+
+.size-medium {
+    width: 56px; 
+    height: 56px;
+}
+
+.size-large {
+    width: 72px; 
+    height: 72px;
+}
+
+.hover-effect:hover {
+    background-color: rgba(128, 128, 128, 0.5);
+}

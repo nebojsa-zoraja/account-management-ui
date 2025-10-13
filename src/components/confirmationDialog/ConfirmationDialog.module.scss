@@ -1,0 +1,72 @@
+.dialog-container {
+    border-radius: 8px;
+}
+
+.edit-card {
+    display: flex;
+    flex-direction: column;
+    align-self: center;
+    justify-self: center;
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+
+    .card-title {
+        display: flex;
+        align-items: center;
+        background-color: #951414;
+        width: 100%;
+        height: 6vh;
+
+        .title-text {
+            color: #f8f9fa;
+            font-weight: bold;
+            margin-left: 2%;
+        }
+    }
+
+    .text-content {
+        display: flex;
+        width: 100%;
+        justify-content: center;
+        align-items: center;
+        height: 10rem;
+        font-size: 20px;
+    }
+
+    .button-section {
+        display: flex;
+        justify-content: space-between;
+        padding: 2% 4%;
+        flex-direction: row;
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
+        background-color: #f8f9fa;
+
+        .confirm-button {
+            background-color: #951414;
+            color: #f8f9fa;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 7rem;
+
+            &:hover {
+                background-color: #7a1212;
+            }
+        }
+
+        .cancel-button {
+            background-color: gray;
+            color: #f8f9fa;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 7rem;
+
+            &:hover {
+                background-color: gray;
+            }
+        }
+    }
+}

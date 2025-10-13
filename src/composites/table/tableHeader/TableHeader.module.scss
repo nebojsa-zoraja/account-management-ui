@@ -1,0 +1,20 @@
+.table-header {
+    background-color: #951414;
+}
+
+.table-header-cell{
+    padding: 8px;
+    color: #f8f9fa;
+    cursor: default;
+    &:not(:last-child){
+        border-right: 1px solid #f8f9fa;
+    }
+
+    &:first-child{
+        border-top-left-radius: 5px;
+    }
+
+    &:last-child{
+        border-top-right-radius: 5px;        
+    }
+}

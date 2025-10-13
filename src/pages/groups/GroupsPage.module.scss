@@ -1,0 +1,33 @@
+.wrapper {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    gap: 5vh;
+    height: 60vh;
+
+    .page-items {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        width: 60%;
+        gap: 2vh;
+        margin-top: 5vh;
+        height: 100%;
+       
+        .content {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            justify-content: center;
+
+            .content-items {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 16px;
+                width: 90%;
+                justify-content: flex-start;
+            }
+        }
+    }
+}

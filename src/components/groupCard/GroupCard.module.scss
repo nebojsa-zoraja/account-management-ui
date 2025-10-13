@@ -1,0 +1,131 @@
+.card {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s;
+  cursor: default;
+  width: 200px;
+  height: 220px;
+}
+
+.card-header {
+  display: flex;
+  margin-bottom: 16px;
+  align-items: flex-start; // Changed to align items at the top
+}
+
+.header-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.icon-group {
+  width: 24px;
+  height: 24px;
+  margin-right: 12px;
+  color: #951414;
+  flex-shrink: 0; // Prevent icon from shrinking
+}
+
+.card-title {
+  color: #3a3a3a;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.project-subtitle {
+  font-size: 14px;
+  color: #951414;
+  font-weight: 500;
+}
+
+.description-wrapper {
+  flex-grow: 1; // This grows to fill space
+  margin-bottom: 12px;
+  min-height: 0; // Important for flex children
+}
+
+.card-description {
+  color: #3a3a3a;
+  text-align: left;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  font-size: 14px;
+  overflow: hidden;
+
+  p {
+    margin: 0;
+  }
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  background-color: #dee2e6;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  color: #3a3a3a;
+  margin-bottom: 16px;
+  width: fit-content;
+}
+
+.badge-icon {
+  width: 14px;
+  height: 14px;
+  margin-right: 6px;
+}
+
+.card-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+
+}
+
+.btn {
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+  border: none;
+  font-family: inherit;
+}
+
+.btn-text {
+  background-color: #951414;
+  color: #ffffff;
+}
+
+.btn-text:hover {
+  background-color: #951414c0;
+}
+
+.btn-icon {
+  background-color: transparent;
+  color: #951414;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-icon:hover {
+  background-color: rgba(149, 20, 20, 0.274);
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+}
