@@ -1,9 +1,21 @@
-import { CircularProgress, SelectChangeEvent, TextField } from "@mui/material";
-import styles from "./ManageUser.module.scss";
-import SelectDropdown from "../../../components/select/SelectDropdown";
+import {
+  CircularProgress,
+  TextField,
+  Box,
+  Typography,
+  Divider,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+  Stack,
+} from "@mui/material";
 import { ChangeEvent, useEffect } from "react";
 import useUserStore from "../../../store/userStore/UserStore";
-import { users } from "../../../mock/UserMockData";
+import { userAccountApi } from "../../../api/userAccountApi";
+import { UserGender } from "../../../models/enums/userEnums";
+import { toast } from "react-toastify";
+import styles from "./ManageUser.module.scss";
 
 const ManageUser = () => {
   const {
@@ -18,13 +30,18 @@ const ManageUser = () => {
   useEffect(() => {
     if (isEdit && selectedUserId) {
       setIsDetailsLoading(true);
-      const timer = setTimeout(() => {
-        const user = users.find((u) => u.id === selectedUserId);
-        setSelectedUser(user!);
-        setIsDetailsLoading(false);
-      }, 500);
-
-      return () => clearTimeout(timer);
+      userAccountApi
+        .getUserById(selectedUserId)
+        .then((user) => {
+          setSelectedUser(user);
+        })
+        .catch((err) => {
+          console.error("Error fetching user:", err);
+          toast.error("Greška pri učitavanju detalja korisnika.");
+        })
+        .finally(() => {
+          setIsDetailsLoading(false);
+        });
     }
     // eslint-disable-next-line
   }, [selectedUserId, isEdit]);
@@ -37,94 +54,123 @@ const ManageUser = () => {
     }));
   };
 
-  const handleDropdownChange = (e: SelectChangeEvent<string | number>) => {
-    const { name, value } = e.target;
+  const handleSelectChange = (name: string, value: any) => {
+    let newValue = name === "isDeleted" ? Boolean(value) : value;
     setSelectedUser((user) => ({
       ...user,
-      [name]: Boolean(value),
+      [name]: newValue,
     }));
   };
 
-  useEffect(() => {
-    console.log(selectedUser);
-  }, [selectedUser]);
-
   return (
-    <div className={styles["card-content"]}>
+    <Box className={styles["container"]}>
       {isDetailsLoading ? (
-        <div className={styles["loading-container"]}>
-          <CircularProgress sx={{ color: "#951414" }} />
-        </div>
+        <Box className={styles["loading-container"]}>
+          <CircularProgress className={styles["loading-progress"]} />
+        </Box>
       ) : (
-        <>
-          <div className={styles["content-item"]}>
-            <span className={styles["label"]}>Ime:</span>
-            <TextField
-              name="firstName"
-              className={styles["input-field"]}
-              id="outlined-basic"
-              variant="outlined"
-              size="small"
-              fullWidth
-              onChange={handleInputChange}
-              value={selectedUser?.firstName || ""}
-            />
-          </div>
-          <div className={styles["content-item"]}>
-            <span className={styles["label"]}>Prezime:</span>
-            <TextField
-              name="lastName"
-              className={styles["input-field"]}
-              id="outlined-basic"
-              variant="outlined"
-              size="small"
-              fullWidth
-              onChange={handleInputChange}
-              value={selectedUser?.lastName || ""}
-            />
-          </div>
-          <div className={styles["content-item"]}>
-            <span className={styles["label"]}>Korisničko ime:</span>
+        <Box>
+          <Typography variant="h6" gutterBottom className={styles["section-title"]}>
+            Osnovne informacije
+          </Typography>
+          <Stack spacing={2.5}>
+            <Box className={styles["field-row"]}>
+              <TextField
+                name="firstName"
+                label="Ime"
+                variant="outlined"
+                size="small"
+                fullWidth
+                onChange={handleInputChange}
+                value={selectedUser?.firstName || ""}
+              />
+              <TextField
+                name="lastName"
+                label="Prezime"
+                variant="outlined"
+                size="small"
+                fullWidth
+                onChange={handleInputChange}
+                value={selectedUser?.lastName || ""}
+              />
+            </Box>
             <TextField
               name="username"
-              className={styles["input-field"]}
-              id="outlined-basic"
+              label="Korisničko ime"
               variant="outlined"
               size="small"
               fullWidth
               onChange={handleInputChange}
               value={selectedUser?.username || ""}
             />
-          </div>
-          <div className={styles["content-item"]}>
-            <span className={styles["label"]}>Email:</span>
             <TextField
               name="email"
-              className={styles["input-field"]}
-              id="outlined-basic"
+              label="Email"
+              type="email"
               variant="outlined"
               size="small"
               fullWidth
               onChange={handleInputChange}
               value={selectedUser?.email || ""}
             />
-          </div>
-          <div className={styles["content-item"]}>
-            <span className={styles["label"]}>Aktivacioni status:</span>
-            <SelectDropdown
-              className={styles["input-field"]}
-              onChange={handleDropdownChange}
-              options={[
-                { value: 0, label: "Aktivan" },
-                { value: 1, label: "Neaktivan" },
-              ]}
-              value={selectedUser?.isDeleted ? 1 : 0}
-              name="isDeleted"
+            <TextField
+              name="phoneNumber"
+              label="Broj telefona"
+              variant="outlined"
+              size="small"
+              fullWidth
+              onChange={handleInputChange}
+              value={selectedUser?.phoneNumber || ""}
             />
-          </div>
-        </>
+            <FormControl fullWidth size="small">
+              <InputLabel>Pol</InputLabel>
+              <Select
+                value={selectedUser?.gender ?? UserGender.Unspecified}
+                label="Pol"
+                onChange={(e) => handleSelectChange("gender", e.target.value)}
+              >
+                <MenuItem value={UserGender.Male}>Muški</MenuItem>
+                <MenuItem value={UserGender.Female}>Ženski</MenuItem>
+                <MenuItem value={UserGender.Unspecified}>Neodređen</MenuItem>
+              </Select>
+            </FormControl>
+          </Stack>
+
+          <Divider className={styles["divider"]} />
+
+          <Typography variant="h6" gutterBottom className={styles["section-title"]}>
+            Pristupni podaci
+          </Typography>
+          <Stack spacing={2.5}>
+            <TextField
+              name="password"
+              label="Inicijalna lozinka"
+              variant="outlined"
+              size="small"
+              fullWidth
+              type="password"
+              onChange={handleInputChange}
+              value={selectedUser?.password || ""}
+              helperText={
+                isEdit
+                  ? "Ostavite prazno ako ne želite promeniti lozinku"
+                  : "Unesite inicijalnu lozinku za korisnika"
+              }
+            />
+            <TextField
+              name="confirmPassword"
+              label="Potvrdi lozinku"
+              variant="outlined"
+              size="small"
+              type="password"
+              fullWidth
+              onChange={handleInputChange}
+              value={selectedUser?.confirmPassword || ""}
+            />
+          </Stack>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 };
 

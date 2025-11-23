@@ -1,0 +1,54 @@
+.user-table-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.add-user-section {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.user-select {
+  flex: 1;
+}
+
+.add-button {
+  padding: 8px 24px;
+  background-color: #951414;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  font-family: inherit;
+
+  &:hover:not(:disabled) {
+    background-color: #7a1010;
+  }
+
+  &:disabled {
+    background-color: #adb5bd;
+    cursor: not-allowed;
+  }
+}
+
+.loading-state {
+  padding: 20px;
+  text-align: center;
+}
+
+.no-results {
+  padding: 20px;
+  text-align: center;
+  color: #666;
+}
+
+.circular-progress {
+  color: #951414;
+}

@@ -6,4 +6,5 @@ export const defaultGroupValues: Group = {
   description: "",
   projectId: 0,
   isDeleted: false,
+  userIds: [],
 };

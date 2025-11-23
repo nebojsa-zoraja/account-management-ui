@@ -1,0 +1,45 @@
+@import '../../styles/variables';
+
+.search-bar-container {
+    display: flex;
+    align-items: center;
+    gap: $spacing-3;
+    width: 100%;
+    max-width: 900px;
+    min-width: 0;
+    margin-bottom: $spacing-6;
+    flex-shrink: 0;
+
+    // Responsive behavior
+    @media (max-width: 768px) {
+        max-width: 100%;
+        flex-wrap: wrap;
+    }
+}
+
+.search-input {
+    flex: 1;
+}
+
+.search-button {
+    min-width: 100px;
+}
+
+.import-button {
+    min-width: 120px;
+    border-color: #951414;
+    color: #951414;
+
+    &:hover {
+        border-color: #7a1010;
+        background-color: rgba(149, 20, 20, 0.1);
+    }
+}
+
+.refresh-button {
+    color: #951414;
+
+    &:hover {
+        background-color: rgba(149, 20, 20, 0.1);
+    }
+}

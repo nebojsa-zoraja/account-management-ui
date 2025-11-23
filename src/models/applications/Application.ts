@@ -10,6 +10,8 @@ import {
 export interface ApplicationInterface extends IBaseEntity {
   name: string;
   projectId: number;
+  appType: ApplicationType;
+  isDeleted: boolean;
 }
 
 export interface CreateApplicationInstanceInterface {

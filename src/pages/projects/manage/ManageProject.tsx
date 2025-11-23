@@ -1,19 +1,25 @@
 import { ChangeEvent, useEffect } from "react";
-import styles from "./ManageProject.module.scss";
 import useProjectStore from "../../../store/projectStore/ProjectStore";
-import { projects } from "../../../mock/ProjectMockData";
 import {
+  Box,
   Checkbox,
   CircularProgress,
   Divider,
-  SelectChangeEvent,
   TextField,
+  FormControlLabel,
+  Typography,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Stack,
 } from "@mui/material";
-import { applications } from "../../../mock/ApplicationMockData";
-import SelectDropdown from "../../../components/select/SelectDropdown";
 import { privateLabelingSettingsOptions } from "../../../utils/dropdownOptions/projectDropdownOptions";
 import Applications from "../applications/Applications";
 import ProjectRoles from "./projectRoles/ProjectRoles";
+import { projectApi } from "../../../api/projectApi";
+import { toast } from "react-toastify";
+import styles from "./ManageProject.module.scss";
 
 const ManageProject = () => {
   const {
@@ -26,19 +32,24 @@ const ManageProject = () => {
   } = useProjectStore();
 
   useEffect(() => {
-    if (isEdit && selectedProjectId) {
-      setIsDetailsLoading(true);
-      const timer = setTimeout(() => {
-        const project = projects.find((p) => p.id === selectedProjectId);
-        const apps = applications.filter(
-          (app) => app.projectId === selectedProjectId
-        );
-        setSelectedProject(() => ({ ...project!, assignedApplications: apps }));
-        setIsDetailsLoading(false);
-      }, 500);
+    const fetchProjectDetails = async () => {
+      if (isEdit && selectedProjectId) {
+        setIsDetailsLoading(true);
+        try {
+          const project = await projectApi.getProjectById(selectedProjectId);
+          setSelectedProject(() => ({
+            ...project,
+          }));
+        } catch (error) {
+          console.error("Failed to fetch project details:", error);
+          toast.error("Greška pri učitavanju detalja projekta");
+        } finally {
+          setIsDetailsLoading(false);
+        }
+      }
+    };
 
-      return () => clearTimeout(timer);
-    }
+    fetchProjectDetails();
     // eslint-disable-next-line
   }, [selectedProjectId, isEdit]);
 
@@ -50,114 +61,103 @@ const ManageProject = () => {
     }));
   };
 
-  const handleDropdownChange = (e: SelectChangeEvent<string | number>) => {
-    const { name, value } = e.target;
-    setSelectedProject((app) => ({
-      ...app,
+  const handleSelectChange = (name: string, value: any) => {
+    setSelectedProject((project) => ({
+      ...project,
       [name]: value,
     }));
   };
 
   return (
-    <div className={styles["card-content"]}>
+    <Box className={styles["container"]}>
       {isDetailsLoading ? (
-        <div className={styles["loading-container"]}>
-          <CircularProgress sx={{ color: "#951414" }} />
-        </div>
+        <Box className={styles["loading-state"]}>
+          <CircularProgress className={styles["loading-progress"]} />
+        </Box>
       ) : (
-        <div className={styles["content-wrapper"]}>
-          <div className={styles["content-item"]}>
-            <div className={styles["label"]}>Naziv projekata:</div>
+        <Box>
+          <Typography variant="h6" gutterBottom className={styles["section-title"]}>
+            Informacije o projektu
+          </Typography>
+          <Stack spacing={2.5}>
             <TextField
               name="name"
-              className={styles["input-field"]}
-              id="outlined-basic"
+              label="Naziv projekta"
               variant="outlined"
               size="small"
               fullWidth
               onChange={handleInputChange}
               value={selectedProject?.name || ""}
             />
-          </div>
-          <div className={styles["content-item"]}>
-            <span className={styles["label"]}>Metod Autentifikacije:</span>
-            <SelectDropdown
-              className={styles["input-field"]}
-              onChange={handleDropdownChange}
-              options={privateLabelingSettingsOptions}
-              value={selectedProject.privateLabelingSetting}
-              name="authMethodType"
-              size="small"
+            <FormControl fullWidth size="small">
+              <InputLabel>Metod autentifikacije</InputLabel>
+              <Select
+                value={selectedProject.privateLabelingSetting}
+                label="Metod autentifikacije"
+                onChange={(e) =>
+                  handleSelectChange("privateLabelingSetting", e.target.value)
+                }
+              >
+                {privateLabelingSettingsOptions.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  name="projectRoleAssertion"
+                  checked={selectedProject.projectRoleAssertion}
+                  onChange={handleInputChange}
+                />
+              }
+              label="Potvrda uloge prilikom autentifikacije"
             />
-          </div>
-          <div className={styles["content-item"]}>
-            <span className={styles["label"]}>
-              Potvrda uloge prilikom autentifikacije:
-            </span>
-            <Checkbox
-              className={styles["input-field"]}
-              size="medium"
-              onChange={handleInputChange}
-              name="projectRoleAssertion"
-              checked={selectedProject.projectRoleAssertion}
-              disableRipple
+            <FormControlLabel
+              control={
+                <Checkbox
+                  name="projectRoleCheck"
+                  checked={selectedProject.projectRoleCheck}
+                  onChange={handleInputChange}
+                />
+              }
+              label="Provera autorizacije na autentifikaciji"
             />
-          </div>
-          <div className={styles["content-item"]}>
-            <span className={styles["label"]}>
-              Provera autorizacije na autentifikaciji:
-            </span>
-            <Checkbox
-              className={styles["input-field"]}
-              size="medium"
-              onChange={handleInputChange}
-              name="projectRoleCheck"
-              checked={selectedProject.projectRoleCheck}
-              disableRipple
+            <FormControlLabel
+              control={
+                <Checkbox
+                  name="hasProjectCheck"
+                  checked={selectedProject.hasProjectCheck}
+                  onChange={handleInputChange}
+                />
+              }
+              label="Provera projekta prilikom autentifikacije"
             />
-          </div>
-          <div className={styles["content-item"]}>
-            <span className={styles["label"]}>
-              Provera projekta prilikom autentifikacije:
-            </span>
-            <Checkbox
-              className={styles["input-field"]}
-              size="medium"
-              onChange={handleInputChange}
-              name="hasProjectCheck"
-              checked={selectedProject.hasProjectCheck}
-              disableRipple
-            />
-          </div>
+          </Stack>
+
           {selectedProjectId && (
             <>
-              <Divider />
-              <div className={styles["table-section"]}>
-                <span className={styles["section-title"]}>
-                  Pridružene aplikacije:
-                </span>
-                <div className={styles["content-table"]}>
-                  <Applications
-                    assignedApplications={
-                      selectedProject?.assignedApplications ?? []
-                    }
-                  />
-                </div>
-              </div>
-              <Divider />
-              <div className={styles["table-section"]}>
-                <span className={styles["section-title"]}>
-                  Pridružene uloge:
-                </span>
-                <div className={styles["content-table"]}>
-                  <ProjectRoles />
-                </div>
-              </div>
+              <Divider className={styles["divider"]} />
+              <Typography variant="h6" gutterBottom className={styles["section-title"]}>
+                Pridružene aplikacije
+              </Typography>
+              <Box className={styles["section-container"]}>
+                <Applications />
+              </Box>
+              <Divider className={styles["divider"]} />
+              <Typography variant="h6" gutterBottom className={styles["section-title"]}>
+                Pridružene uloge
+              </Typography>
+              <Box>
+                <ProjectRoles />
+              </Box>
             </>
           )}
-        </div>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 };
 

@@ -1,0 +1,141 @@
+/**
+ * TIAC Account Management - Global Styles
+ * Import SASS variables and define global styles
+ */
+
+@import './styles/variables';
+
+// ==========================================
+// RESET & BASE STYLES
+// ==========================================
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: $color-bg-default;
+  font-family: $font-family-primary;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: $font-size-sm;
+  line-height: $line-height-normal;
+  color: $color-text-primary;
+  height: 100%;
+}
+
+code {
+  font-family: $font-family-monospace;
+}
+
+#root {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+// ==========================================
+// SCROLLBAR STYLING
+// ==========================================
+
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: $color-gray-100;
+  border-radius: $radius-sm;
+}
+
+::-webkit-scrollbar-thumb {
+  background: $color-gray-400;
+  border-radius: $radius-sm;
+  border: 2px solid $color-gray-100;
+
+  &:hover {
+    background: $color-gray-500;
+  }
+
+  &:active {
+    background: $color-gray-600;
+  }
+}
+
+// Firefox scrollbar styling
+* {
+  scrollbar-width: thin;
+  scrollbar-color: $color-gray-400 $color-gray-100;
+}
+
+// ==========================================
+// UTILITY CLASSES
+// ==========================================
+
+.text-truncate {
+  @include text-truncate;
+}
+
+.flex-center {
+  @include flex-center;
+}
+
+.flex-between {
+  @include flex-between;
+}
+
+// ==========================================
+// ANIMATION KEYFRAMES
+// ==========================================
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ==========================================
+// FOCUS VISIBLE POLYFILL
+// ==========================================
+
+// Remove default focus styles for mouse users
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+// Add custom focus styles for keyboard users
+:focus-visible {
+  outline: 2px solid $color-primary;
+  outline-offset: 2px;
+}

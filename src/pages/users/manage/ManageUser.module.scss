@@ -1,27 +1,28 @@
- .card-content {
-    display: flex;
-    flex-direction: column;
-    background-color: #f8f9fa;
-    width: 100%;
+.container {
+  padding: 16px;
+}
 
-    .loading-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 200px;
-    }
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+}
 
-    .content-item {
-        display: flex;
-        padding: 2% 2% 2% 2%;
-        gap: 10%;
-        align-items: center;
-        
-        .label {
-            width: 20%;
-        }
-        .input-field {
-            width: 80%;
-        }
-    }
+.loading-progress {
+  color: #951414;
+}
+
+.section-title {
+  margin-bottom: 16px;
+}
+
+.field-row {
+  display: flex;
+  gap: 16px;
+}
+
+.divider {
+  margin-top: 24px;
+  margin-bottom: 24px;
 }

@@ -12,7 +12,7 @@ const TableRow = <T extends IBaseEntity>({
     const value = entity[column.accessor];
     return (
       <td key={index}>
-        <TableCell value={value} columnDefinition={column} />
+        <TableCell value={value} columnDefinition={column} entity={entity} />
       </td>
     );
   });

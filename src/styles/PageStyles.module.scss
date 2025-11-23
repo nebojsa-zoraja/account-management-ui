@@ -1,28 +1,27 @@
+@import './variables';
+
 .wrapper {
-    display: flex;
+    flex: 1;
+    overflow-y: auto;
+    padding: $spacing-8 $spacing-10;
     width: 100%;
-    justify-content: center;
-    align-items: center;
-    gap: 5vh;
-        
-    .page-items {
+}
+
+.page-items {
+    display: flex;
+    flex-direction: column;
+    max-width: 1400px;
+    margin: 0 auto;
+    gap: $spacing-6;
+
+    .content-wrapper {
         display: flex;
-        flex-direction: column;
-        align-items: center;
-        max-width: 70%;
-        min-width: 30%;
-        gap: 2vh;
-        margin-top: 5vh;
-        
-        .content-wrapper {
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        justify-content: center;
+        align-items: flex-start;
+        width: 100%;
+
+        .table {
             width: 100%;
-            
-            .table {
-                width: 100%;
-            }
         }
     }
 }

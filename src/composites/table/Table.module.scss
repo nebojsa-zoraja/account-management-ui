@@ -1,7 +1,31 @@
+@import '../../styles/variables';
+
+.table-container {
+  width: 100%;
+  background-color: $color-bg-paper;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+  overflow: hidden;
+  border: 1px solid $color-border-light;
+}
+
 .table {
-  width: 100%; 
-  background-color: #f8f9fa;
+  width: 100%;
+  background-color: transparent;
   padding: 0;
-  border-radius: 5px;
   border-spacing: 0;
+  border-collapse: separate;
+}
+
+.empty-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem 1rem;
+  color: $color-text-disabled;
+  font-size: 1rem;
+
+  p {
+    margin: 0;
+  }
 }

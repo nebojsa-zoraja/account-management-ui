@@ -1,57 +1,177 @@
+@import '../../styles/variables';
+
 .wrapper {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
     width: 100%;
-    height: 100%;
-    border-radius: 8px;
+    max-height: 90vh;
 }
 
 .dialog-container {
-    border-radius: 8px;
+    :global(.MuiDialog-paper) {
+        border-radius: $radius-lg;
+        box-shadow: $shadow-xl;
+        overflow: hidden;
+    }
 }
 
 .edit-card {
     display: flex;
     flex-direction: column;
-    align-self: center;
-    justify-self: center;
     width: 100%;
-    height: 100%;
-    border-radius: 8px;
+    max-height: 90vh;
+}
 
-    .card-title {
+.card-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(135deg, $color-primary 0%, $color-primary-dark 100%);
+    padding: $spacing-5 $spacing-6;
+    box-shadow: $shadow-sm;
+    flex-shrink: 0;
+
+    .title-text {
+        color: $color-white;
+        font-weight: 600;
+        font-size: 1.25rem;
+        letter-spacing: 0.01em;
+        line-height: 1.2;
+    }
+
+    .close-button {
+        @include button-reset;
+        width: 36px;
+        height: 36px;
+        border-radius: $radius-md;
         display: flex;
         align-items: center;
-        background-color: #951414;
-        width: 100%;
-        height: 6vh;
+        justify-content: center;
+        @include transition(background-color);
 
-        .title-text {
-            color: #f8f9fa;
-            font-weight: bold;
-            margin-left: 2%;
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        &:active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .close-icon {
+            width: 20px;
+            height: 20px;
+            color: $color-white;
+        }
+    }
+}
+
+.dialog-content {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+.button-section {
+    display: flex;
+    justify-content: flex-end;
+    gap: $spacing-3;
+    padding: $spacing-5 $spacing-6;
+    background-color: $color-white;
+    border-top: 1px solid $color-border-light;
+    flex-shrink: 0;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+
+    .cancel-button {
+        border-color: $color-border-main;
+        color: $color-text-primary;
+        padding: $spacing-2-5 $spacing-5;
+        font-size: 0.9375rem;
+        font-weight: 600;
+        font-family: inherit;
+        text-transform: none;
+        border-radius: $radius-base;
+        min-width: 100px;
+        @include transition(all);
+
+        &:hover {
+            border-color: $color-primary;
+            color: $color-primary;
+            background-color: $color-primary-pale;
+        }
+
+        &:active {
+            transform: scale(0.98);
         }
     }
 
-    .button-section {
-        display: flex;
+    .save-button {
+        background-color: $color-primary;
+        color: $color-white;
+        border: none;
+        border-radius: $radius-base;
+        padding: $spacing-2-5 $spacing-5;
+        font-size: 0.9375rem;
+        font-weight: 600;
+        font-family: inherit;
+        text-transform: none;
+        @include transition(all);
+        min-width: 100px;
+
+        &:hover {
+            background-color: $color-primary-dark;
+            box-shadow: $shadow-md;
+        }
+
+        &:active {
+            background-color: $color-primary-darker;
+            transform: scale(0.98);
+        }
+
+        &:focus-visible {
+            outline: 2px solid $color-primary-light;
+            outline-offset: 2px;
+        }
+    }
+}
+
+// Dialog styles for current implementation
+.dialog-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 16px;
+}
+
+.dialog-close-button {
+    color: rgba(0, 0, 0, 0.54);
+
+    &:hover {
+        background-color: rgba(0, 0, 0, 0.04);
+    }
+}
+
+.dialog-content-wrapper {
+    padding: 0;
+}
+
+.dialog-actions {
+    padding: 16px;
+    gap: 8px;
+
+    &.with-delete-actions {
+        justify-content: space-between;
+    }
+
+    &.without-delete-actions {
         justify-content: flex-end;
-        padding: 2% 4%;
-        border-bottom-left-radius: 8px;
-        border-bottom-right-radius: 8px;
-        background-color: #f8f9fa;
-
-        .save-button {
-            background-color: #951414;
-            color: #f8f9fa;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-
-            &:hover {
-                background-color: #7a1212;
-            }
-        }
     }
+}
+
+.action-buttons-group {
+    display: flex;
+    gap: 8px;
+}
+
+.progress-spinner {
+    color: inherit;
 }

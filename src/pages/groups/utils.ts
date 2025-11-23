@@ -5,5 +5,5 @@ export interface GroupsDialogContent {
 
 export const groupDialogContentDefault: GroupsDialogContent = {
   content: "group",
-  name: "Group",
+  name: "Grupa",
 };

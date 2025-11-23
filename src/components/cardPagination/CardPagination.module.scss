@@ -1,0 +1,50 @@
+.pagination-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0;
+  border-top: 1px solid #e0e0e0;
+  margin-top: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.info-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.controls-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.page-size-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: 16px;
+}
+
+.page-size-select {
+  min-width: 70px;
+}
+
+.buttons-container {
+  display: flex;
+  align-items: center;
+}
+
+.icon-button {
+  color: #951414;
+
+  &:hover {
+    background-color: rgba(149, 20, 20, 0.1);
+  }
+
+  &:disabled {
+    color: #bdbdbd;
+  }
+}

@@ -598,7 +598,6 @@ const GroupManagement = () => {
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
-                    style={{ marginRight: "12px" }}
                   >
                     <path
                       strokeLinecap="round"

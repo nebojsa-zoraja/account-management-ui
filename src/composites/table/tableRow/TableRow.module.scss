@@ -1,22 +1,30 @@
-.table-row{
+@import '../../../styles/variables';
+
+.table-row {
     cursor: pointer;
+    @include transition(background-color);
+    background-color: $color-bg-paper;
 
-    &:focus{
+    // Alternating row colors
+    &:nth-child(even) {
+        background-color: $color-gray-50;
+    }
+
+    &:focus {
         user-select: none;
+        outline: 2px solid $color-primary-pale;
+        outline-offset: -2px;
     }
 
-    &:nth-child(even){
-        background-color: #e9ecef;
+    &:not(:last-child) {
+        border-bottom: 1px solid $color-border-light;
     }
 
-    &:hover{
-        background-color: #ced4da;
-        border-bottom-left-radius: 5px;
-        border-bottom-right-radius: 5px;
+    &:hover {
+        background-color: $color-primary-pale;
     }
-    
-    &:last-child{
-        border-bottom-left-radius: 5px;
-        border-bottom-right-radius: 5px;
+
+    &:active {
+        background-color: $color-primary-hover;
     }
 }

@@ -1,31 +1,50 @@
+@import '../../styles/variables';
+
 .icon-wrapper {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
+    border-radius: $radius-md;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    @include transition(all);
+    background-color: transparent;
+    border: none;
+    color: $color-text-secondary;
 
     & > * {
         pointer-events: none;
     }
+
+    &:active {
+        transform: scale(0.95);
+    }
 }
 
 .size-small {
-    width: 33px; 
-    height: 33px;
+    width: 36px;
+    height: 36px;
+    padding: $spacing-2;
 }
 
 .size-medium {
-    width: 56px; 
-    height: 56px;
+    width: 44px;
+    height: 44px;
+    padding: $spacing-2;
 }
 
 .size-large {
-    width: 72px; 
-    height: 72px;
+    width: 52px;
+    height: 52px;
+    padding: $spacing-3;
 }
 
-.hover-effect:hover {
-    background-color: rgba(128, 128, 128, 0.5);
+.hover-effect {
+    &:hover {
+        background-color: $color-primary-pale;
+        color: $color-primary;
+    }
+
+    &:active {
+        background-color: $color-primary-hover;
+    }
 }

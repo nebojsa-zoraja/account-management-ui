@@ -1,11 +1,26 @@
+@import '../../../styles/variables';
+
 .table-cell {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 8px;
+    padding: $spacing-4 $spacing-4;
+    color: $color-text-primary;
+    font-size: 0.875rem;
+    line-height: 1.5;
+
+    &.actions-cell {
+        gap: 8px;
+    }
 }
 
 .cell-icon {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
+    color: $color-text-secondary;
+    @include transition(color);
+
+    &:hover {
+        color: $color-primary;
+    }
 }

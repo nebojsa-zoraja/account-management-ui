@@ -13,8 +13,9 @@ import {
 export const defaultApplicationValues: ApplicationInterface = {
   id: 0,
   name: "",
-  isDeleted: false,
   projectId: 0,
+  appType: ApplicationType.WEB,
+  isDeleted: false,
 };
 
 export const defaultApplicationDetailsValues: CreateApplicationInstanceInterface =

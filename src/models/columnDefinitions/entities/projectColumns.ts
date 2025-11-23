@@ -13,6 +13,12 @@ export const projectColumns = (
       header: "Naziv projekta",
     },
     {
+      accessor: "isDeleted",
+      header: "Status",
+      type: "custom",
+      render: (value: unknown) => ((value as boolean) ? "Neaktivan" : "Aktivan"),
+    },
+    {
       accessor: "id",
       header: "Izmeni",
       type: "edit",

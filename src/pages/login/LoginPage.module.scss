@@ -1,0 +1,277 @@
+@import '../../styles/variables';
+
+.login-container {
+  @include flex-center;
+  min-height: 100vh;
+  width: 100%;
+  background: linear-gradient(135deg, $color-gray-900 0%, $color-gray-800 50%, $color-gray-900 100%);
+  position: relative;
+  overflow: hidden;
+
+  // Subtle background pattern
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+      radial-gradient(circle at 20% 50%, rgba(149, 20, 20, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(149, 20, 20, 0.08) 0%, transparent 50%);
+    pointer-events: none;
+  }
+}
+
+.login-card {
+  @include card;
+  width: 100%;
+  max-width: 440px;
+  padding: 0;
+  overflow: hidden;
+  box-shadow: $shadow-xl;
+  position: relative;
+  z-index: 1;
+  animation: slideInUp 0.4s ease-out;
+}
+
+.login-header {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-dark 100%);
+  padding: $spacing-10 $spacing-8 $spacing-8;
+  text-align: center;
+  color: $color-white;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.3) 50%,
+      transparent 100%
+    );
+  }
+}
+
+.logo-container {
+  @include flex-center;
+  margin-bottom: $spacing-5;
+}
+
+.tiac-logo {
+  background-image: url("../../utils/svg/tiac.svg");
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  width: 200px;
+  height: 70px;
+  filter: brightness(0) invert(1);
+}
+
+.company-title {
+  font-size: $font-size-3xl;
+  font-weight: $font-weight-bold;
+  margin: 0 0 $spacing-2 0;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.app-title {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-medium;
+  margin: 0 0 $spacing-1 0;
+  color: rgba(255, 255, 255, 0.95);
+  letter-spacing: 0.02em;
+}
+
+.app-subtitle {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-regular;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.login-form {
+  padding: $spacing-8;
+}
+
+.form-group {
+  margin-bottom: $spacing-6;
+
+  &:last-of-type {
+    margin-bottom: $spacing-8;
+  }
+}
+
+.form-label {
+  display: block;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-2;
+  letter-spacing: 0.01em;
+}
+
+.form-input {
+  width: 100%;
+  padding: $spacing-3 $spacing-4;
+  font-size: $font-size-base;
+  font-family: $font-family-primary;
+  color: $color-text-primary;
+  background-color: $color-bg-paper;
+  border: 2px solid $color-border-light;
+  border-radius: $radius-base;
+  @include transition(border-color, box-shadow);
+
+  &::placeholder {
+    color: $color-text-disabled;
+  }
+
+  &:hover:not(:disabled) {
+    border-color: $color-border-main;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: $color-primary;
+    box-shadow: 0 0 0 3px $color-primary-pale;
+  }
+
+  &:disabled {
+    background-color: $color-bg-subtle;
+    color: $color-text-disabled;
+    cursor: not-allowed;
+  }
+}
+
+.error-message {
+  padding: $spacing-3 $spacing-4;
+  background-color: $color-error-pale;
+  border: 1px solid $color-error-light;
+  border-radius: $radius-base;
+  color: $color-error;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  margin-bottom: $spacing-6;
+  animation: slideInDown 0.3s ease-out;
+}
+
+.submit-button {
+  @include button-reset;
+  width: 100%;
+  padding: $spacing-4 $spacing-6;
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  color: $color-white;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-dark 100%);
+  border-radius: $radius-base;
+  @include transition(transform, box-shadow);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, $color-primary-light 0%, $color-primary 100%);
+    opacity: 0;
+    @include transition(opacity);
+    z-index: 0;
+  }
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: $shadow-lg;
+
+    &::before {
+      opacity: 1;
+    }
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: $shadow-md;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-primary-light;
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.button-content {
+  position: relative;
+  z-index: 1;
+  display: inline-block;
+}
+
+.loading-spinner {
+  display: inline-block;
+}
+
+.login-footer {
+  padding: $spacing-5 $spacing-8;
+  background-color: $color-gray-50;
+  border-top: 1px solid $color-border-light;
+  text-align: center;
+}
+
+.footer-text {
+  margin: 0;
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  font-weight: $font-weight-medium;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.error-alert {
+  margin-top: 16px;
+}
+
+.login-button {
+  margin-top: 24px;
+  margin-bottom: 16px;
+  height: 48px;
+}
+
+.progress-spinner {
+  margin-right: 8px;
+}
+
+// Animations
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -1,4 +1,32 @@
- .card-content {
+.container {
+    padding: 16px;
+}
+
+.loading-state {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px;
+}
+
+.loading-progress {
+    color: #951414;
+}
+
+.section-title {
+    margin-bottom: 16px;
+}
+
+.divider {
+    margin-top: 24px;
+    margin-bottom: 24px;
+}
+
+.section-container {
+    margin-bottom: 24px;
+}
+
+.card-content {
     display: flex;
     flex-direction: column;
     background-color: #f8f9fa;
@@ -16,12 +44,27 @@
         padding: 2% 2% 2% 2%;
         gap: 10%;
         align-items: center;
-        
+
         .label {
+            font-size: 16px;
+            font-weight: 500;
             width: 20%;
         }
         .input-field {
             width: 80%;
+        }
+    }
+
+    .users-section {
+        display: flex;
+        flex-direction: column;
+        padding: 2% 2%;
+        gap: 16px;
+
+        .section-label {
+            font-weight: 600;
+            font-size: 16px;
+            color: #3a3a3a;
         }
     }
 }

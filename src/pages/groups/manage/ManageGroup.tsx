@@ -1,13 +1,31 @@
-import { CircularProgress, TextField } from "@mui/material";
-import styles from "./ManageGroup.module.scss";
+import {
+  CircularProgress,
+  TextField,
+  Box,
+  Stack,
+  Typography,
+  Divider,
+  Autocomplete,
+} from "@mui/material";
 import useGroupStore from "../../../store/groupStore/GroupStore";
 import { ChangeEvent, useEffect, useState } from "react";
-import SearchSelect from "../../../components/select/searchSelect/SearchSelect";
-import { projects as mockProjects } from "../../../mock/ProjectMockData";
+import GroupUserTable from "./userTable/GroupUserTable";
+import { projectApi } from "../../../api/projectApi";
+import { toast } from "react-toastify";
+import styles from "./ManageGroup.module.scss";
 
 const ManageGroup = () => {
-  const { isDetailsLoading, setSelectedGroup, selectedGroup } = useGroupStore();
-  const [projects, setProjects] = useState<any>([]);
+  const {
+    isDetailsLoading,
+    setSelectedGroup,
+    selectedGroup,
+    selectedGroupId,
+    isEdit,
+  } = useGroupStore();
+  const [projects, setProjects] = useState<{ label: string; value: number }[]>(
+    []
+  );
+  const [isLoadingProjects, setIsLoadingProjects] = useState(false);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -17,52 +35,79 @@ const ManageGroup = () => {
     }));
   };
 
-  useEffect(() => {
-    const projectList = mockProjects.map((x) => ({
-      label: x.name,
-      value: x.id,
+  const handleProjectChange = (name: string, value: string | number | null) => {
+    setSelectedGroup((group) => ({
+      ...group,
+      [name]: value || 0,
     }));
+  };
 
-    setProjects(projectList);
+  useEffect(() => {
+    const fetchProjects = async () => {
+      setIsLoadingProjects(true);
+      try {
+        const response = await projectApi.getAllProjects({ pageSize: 1000 });
+        const projectList = response.items.map((x) => ({
+          label: x.name,
+          value: x.id,
+        }));
+        setProjects(projectList);
+      } catch (error) {
+        console.error("Failed to fetch projects:", error);
+        toast.error("Greška pri učitavanju projekata");
+      } finally {
+        setIsLoadingProjects(false);
+      }
+    };
+
+    fetchProjects();
   }, []);
 
   return (
-    <div className={styles["card-content"]}>
+    <Box className={styles["container"]}>
       {isDetailsLoading ? (
-        <div className={styles["loading-container"]}>
-          <CircularProgress sx={{ color: "#951414" }} />
-        </div>
+        <Box className={styles["loading-state"]}>
+          <CircularProgress className={styles["loading-progress"]} />
+        </Box>
       ) : (
-        <>
-          <div className={styles["content-item"]}>
-            <span className={styles["label"]}>Projekat:</span>
-            <SearchSelect
-              className={styles["input-field"]}
-              onChange={() => {}}
+        <Box>
+          <Typography variant="h6" gutterBottom className={styles["section-title"]}>
+            Informacije o grupi
+          </Typography>
+          <Stack spacing={2.5}>
+            <Autocomplete
               options={projects}
-              value={selectedGroup?.projectId}
-              name="projectId"
+              getOptionLabel={(option: any) => option.label || ""}
+              value={
+                projects.find(
+                  (p: any) => p.value === selectedGroup?.projectId
+                ) || null
+              }
+              onChange={(_, newValue) =>
+                handleProjectChange("projectId", newValue?.value || null)
+              }
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Projekat"
+                  size="small"
+                  variant="outlined"
+                />
+              )}
+              fullWidth
             />
-          </div>
-          <div className={styles["content-item"]}>
-            <span className={styles["label"]}>Naziv Grupe:</span>
             <TextField
               name="name"
-              className={styles["input-field"]}
-              id="outlined-basic"
+              label="Naziv grupe"
               variant="outlined"
               size="small"
               fullWidth
               onChange={handleInputChange}
               value={selectedGroup?.name || ""}
             />
-          </div>
-          <div className={styles["content-item"]}>
-            <span className={styles["label"]}>Opis:</span>
             <TextField
               name="description"
-              className={styles["input-field"]}
-              id="outlined-basic"
+              label="Opis"
               variant="outlined"
               size="small"
               fullWidth
@@ -70,11 +115,25 @@ const ManageGroup = () => {
               rows={4}
               onChange={handleInputChange}
               value={selectedGroup?.description || ""}
+              helperText="Opišite svrhu i odgovornosti ove grupe"
             />
-          </div>
-        </>
+          </Stack>
+
+          <Divider className={styles["divider"]} />
+
+          {isEdit && selectedGroupId && (
+            <>
+              <Typography variant="h6" gutterBottom className={styles["section-title"]}>
+                Korisnici
+              </Typography>
+              <Box>
+                <GroupUserTable groupId={selectedGroupId} />
+              </Box>
+            </>
+          )}
+        </Box>
       )}
-    </div>
+    </Box>
   );
 };
 

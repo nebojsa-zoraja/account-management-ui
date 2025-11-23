@@ -2,6 +2,7 @@ import React, { FC, useState } from "react";
 import TextField from "@mui/material/TextField";
 import Chip from "@mui/material/Chip";
 import Box from "@mui/material/Box";
+import chipStyles from "./ChipInput.module.scss";
 
 interface ChipInputProps {
   label?: string;
@@ -48,13 +49,7 @@ const ChipInput: FC<ChipInputProps> = ({
       size="small"
       InputProps={{
         startAdornment: (
-          <Box
-            sx={{
-              display: "flex",
-              flexWrap: "wrap",
-              margin: "1px", // Add a small margin to prevent chips from touching the border
-            }}
-          >
+          <Box className={chipStyles["chip-container"]}>
             {selectedItems.map((item) => (
               <Chip key={item} label={item} onDelete={handleDelete(item)} />
             ))}

@@ -1,20 +1,21 @@
+@import '../../../styles/variables';
+
 .table-header {
-    background-color: #951414;
+    background: linear-gradient(135deg, $color-primary 0%, $color-primary-dark 100%);
+    border-bottom: 2px solid $color-primary-darker;
 }
 
-.table-header-cell{
-    padding: 8px;
-    color: #f8f9fa;
+.table-header-cell {
+    padding: $spacing-4 $spacing-4;
+    color: $color-white;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
     cursor: default;
-    &:not(:last-child){
-        border-right: 1px solid #f8f9fa;
-    }
+    text-align: center;
 
-    &:first-child{
-        border-top-left-radius: 5px;
-    }
-
-    &:last-child{
-        border-top-right-radius: 5px;        
+    &:not(:last-child) {
+        border-right: 1px solid rgba(255, 255, 255, 0.2);
     }
 }

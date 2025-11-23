@@ -17,8 +17,4 @@ export const Tabs: ITabDefinition[] = [
     label: "Grupe",
     route: "/groups",
   },
-  {
-    label: "Ovlašćenja",
-    route: "/permissions",
-  },
 ];

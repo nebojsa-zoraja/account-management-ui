@@ -1,20 +1,26 @@
 import {
-  SelectChangeEvent,
   CircularProgress,
   TextField,
   Divider,
+  Box,
+  Typography,
+  Stack,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  FormControlLabel,
   Checkbox,
+  Alert,
 } from "@mui/material";
-import { useState, useCallback, useEffect, ChangeEvent } from "react";
+import { useEffect, ChangeEvent, useMemo } from "react";
 import ChipInput from "../../../../components/chipInput/ChipInput";
 import MultipleSelect from "../../../../components/multipleSelect/MultipleSelect";
-import SelectDropdown from "../../../../components/select/SelectDropdown";
-import { applications } from "../../../../mock/ApplicationMockData";
-import { projects } from "../../../../mock/ProjectMockData";
-import { defaultApplicationValues } from "../../../../models/defaults/defaultApplicationValues";
 import {
   ApplicationGrantType,
   ApplicationResponseType,
+  ApplicationType,
+  ApplicationClientAuthMethod,
 } from "../../../../models/enums/applicationEnums";
 import useApplicationStore from "../../../../store/applicationStore/ApplicationStore";
 import useProjectStore from "../../../../store/projectStore/ProjectStore";
@@ -24,51 +30,68 @@ import applicationAccessTokenTypeOptions, {
   applicationGrantTypeOptions,
   applicationResponseTypeOptions,
 } from "../../../../utils/dropdownOptions/applicationDropdownOptions";
+import {
+  filterAuthMethodOptions,
+  filterGrantTypeOptions,
+  filterResponseTypeOptions,
+  getAllowedAuthMethods,
+  getAllowedGrantTypes,
+  getAllowedResponseTypes,
+  getRecommendedGrantTypes,
+  getRecommendedResponseType,
+  getApplicationTypeHelpText,
+  getDeprecationWarning,
+  validateResponseTypes,
+  validateGrantAndResponseTypeCompatibility,
+} from "../../../../utils/zitadelApplicationValidator";
 import styles from "./ManageApplication.module.scss";
 
 const ManageApplication = () => {
   const {
-    isEdit,
     isDetailsLoading,
-    setIsDetailsLoading,
     selectedApplicationDetails,
     setSelectedApplicationDetails,
-    selectedApplicationId,
-    setSelectedApplication,
+    isEdit,
   } = useApplicationStore();
 
-  const { selectedProjectId } = useProjectStore();
+  const { selectedProjectId, selectedProject } = useProjectStore();
 
-  const [projectName, setProjectName] = useState("");
-  const [isProjectLoading, setIsProjectLoading] = useState(false);
+  // Filter options based on selected application type
+  const filteredAuthMethodOptions = useMemo(() => {
+    const appType = selectedApplicationDetails.appType as ApplicationType;
+    return filterAuthMethodOptions(applicationClientAuthMethodOptions, appType);
+  }, [selectedApplicationDetails.appType]);
 
-  const fetchProject = useCallback(async (id: number | null) => {
-    // Simulate fetching project data
-    return new Promise((resolve) => {
-      const project = projects.find((p) => p.id === id);
-      setProjectName(project ? project.name : "");
-      resolve(project ? project.name : "");
-    });
-  }, []);
+  const filteredGrantTypeOptions = useMemo(() => {
+    const appType = selectedApplicationDetails.appType as ApplicationType;
+    return filterGrantTypeOptions(applicationGrantTypeOptions, appType);
+  }, [selectedApplicationDetails.appType]);
 
-  useEffect(() => {
-    if (isEdit && selectedApplicationId) {
-      setIsDetailsLoading(true);
-      const timer = setTimeout(() => {
-        const app = applications.find((a) => a.id === selectedApplicationId);
-        setSelectedApplication(app ?? defaultApplicationValues);
-        setSelectedApplicationDetails((prev) => ({
-          ...prev,
-          name: app?.name || "",
-          applicationProjectId: app?.projectId || 0,
-        }));
-        setIsDetailsLoading(false);
-      }, 500);
+  const filteredResponseTypeOptions = useMemo(() => {
+    const appType = selectedApplicationDetails.appType as ApplicationType;
+    return filterResponseTypeOptions(applicationResponseTypeOptions, appType);
+  }, [selectedApplicationDetails.appType]);
 
-      return () => clearTimeout(timer);
-    }
-    // eslint-disable-next-line
-  }, [selectedApplicationId, isEdit]);
+  // Get help text and warnings
+  const appTypeHelpText = useMemo(() => {
+    const appType = selectedApplicationDetails.appType as ApplicationType;
+    return getApplicationTypeHelpText(appType);
+  }, [selectedApplicationDetails.appType]);
+
+  const deprecationWarning = useMemo(() => {
+    return getDeprecationWarning(selectedApplicationDetails.grantTypes);
+  }, [selectedApplicationDetails.grantTypes]);
+
+  const responseTypeWarning = useMemo(() => {
+    return validateResponseTypes(selectedApplicationDetails.responseTypes);
+  }, [selectedApplicationDetails.responseTypes]);
+
+  const grantResponseCompatibilityWarning = useMemo(() => {
+    return validateGrantAndResponseTypeCompatibility(
+      selectedApplicationDetails.grantTypes,
+      selectedApplicationDetails.responseTypes
+    );
+  }, [selectedApplicationDetails.grantTypes, selectedApplicationDetails.responseTypes]);
 
   useEffect(() => {
     if (selectedProjectId) {
@@ -76,15 +99,53 @@ const ManageApplication = () => {
         ...prev,
         applicationProjectId: selectedProjectId,
       }));
-      setIsProjectLoading(true);
-      const timer = setTimeout(() => {
-        fetchProject(selectedProjectId);
-        setIsProjectLoading(false);
-      }, 500);
-
-      return () => clearTimeout(timer);
     }
-  }, [selectedProjectId, fetchProject]);
+    // eslint-disable-next-line
+  }, [selectedProjectId]);
+
+  // Auto-update configuration when application type changes
+  useEffect(() => {
+    const appType = selectedApplicationDetails.appType as ApplicationType;
+    const allowedAuthMethods = getAllowedAuthMethods(appType);
+    const allowedGrantTypes = getAllowedGrantTypes(appType);
+    const allowedResponseTypes = getAllowedResponseTypes(appType);
+
+    // Check if current auth method is allowed, if not, set to first allowed
+    const currentAuthMethod = selectedApplicationDetails.authMethodType as ApplicationClientAuthMethod;
+    if (!allowedAuthMethods.includes(currentAuthMethod)) {
+      setSelectedApplicationDetails((prev) => ({
+        ...prev,
+        authMethodType: allowedAuthMethods[0],
+      }));
+    }
+
+    // Filter out invalid grant types
+    const validGrantTypes = selectedApplicationDetails.grantTypes.filter((gt) =>
+      allowedGrantTypes.includes(gt)
+    );
+    if (validGrantTypes.length !== selectedApplicationDetails.grantTypes.length) {
+      // If some grant types were filtered out, set recommended grant types
+      const recommended = getRecommendedGrantTypes(appType);
+      setSelectedApplicationDetails((prev) => ({
+        ...prev,
+        grantTypes: recommended,
+      }));
+    }
+
+    // Filter out invalid response types
+    const validResponseTypes = selectedApplicationDetails.responseTypes.filter((rt) =>
+      allowedResponseTypes.includes(rt)
+    );
+    if (validResponseTypes.length !== selectedApplicationDetails.responseTypes.length) {
+      // If some response types were filtered out, set recommended response type
+      const recommended = getRecommendedResponseType(appType);
+      setSelectedApplicationDetails((prev) => ({
+        ...prev,
+        responseTypes: [recommended],
+      }));
+    }
+    // eslint-disable-next-line
+  }, [selectedApplicationDetails.appType]);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -94,8 +155,7 @@ const ManageApplication = () => {
     }));
   };
 
-  const handleDropdownChange = (e: SelectChangeEvent<string | number>) => {
-    const { name, value } = e.target;
+  const handleSelectChange = (name: string, value: any) => {
     setSelectedApplicationDetails((app) => ({
       ...app,
       [name]: value,
@@ -103,216 +163,296 @@ const ManageApplication = () => {
   };
 
   return (
-    <div className={styles["card-content"]}>
+    <Box className={styles["container"]}>
       {isDetailsLoading ? (
-        <div className={styles["loading-container"]}>
-          <CircularProgress sx={{ color: "#951414" }} />
-        </div>
+        <Box className={styles["loading-state"]}>
+          <CircularProgress className={styles["loading-progress"]} />
+        </Box>
       ) : (
-        <div className={styles["content-wrapper"]}>
-          <div className={styles["content-item"]}>
-            <div className={styles["label"]}>Naziv aplikacije:</div>
+        <Box>
+          <Typography variant="h6" gutterBottom className={styles["section-title"]}>
+            Osnovna podešavanja
+          </Typography>
+          <Stack spacing={2.5}>
             <TextField
               name="name"
-              className={styles["input-field"]}
-              id="outlined-basic"
+              label="Naziv aplikacije"
               variant="outlined"
               size="small"
               fullWidth
               onChange={handleInputChange}
               value={selectedApplicationDetails?.name || ""}
+              disabled={isEdit}
+              helperText={
+                isEdit
+                  ? "Naziv aplikacije se ne može menjati nakon kreiranja"
+                  : ""
+              }
             />
-          </div>
-          <Divider />
-          <div className={styles["content-item"]}>
-            <span className={styles["label"]}>Projekat:</span>
-            {isProjectLoading ? (
-              <div className={styles["loading-field"]}>
-                <CircularProgress sx={{ color: "#951414" }} size={20} />
-              </div>
-            ) : (
-              <TextField
-                className={styles["input-field"]}
-                id="outlined-basic"
-                variant="outlined"
-                size="small"
-                fullWidth
-                disabled
-                value={projectName}
-              />
-            )}
-          </div>
-          <div className={styles["content-item"]}>
-            <span className={styles["label"]}>
-              Dodavanje Uloga u Token za Pristup:
-            </span>
-            <Checkbox
-              disableRipple
-              className={styles["input-field"]}
-              size="medium"
-              onChange={handleInputChange}
-              name="accessTokenRoleAssertion"
-              checked={selectedApplicationDetails.accessTokenRoleAssertion}
-            />
-          </div>
-          <div className={styles["content-item"]}>
-            <span className={styles["label"]}>Tip Tokena za Pristup:</span>
-            <SelectDropdown
-              className={styles["input-field"]}
-              onChange={handleDropdownChange}
-              options={applicationAccessTokenTypeOptions}
-              value={selectedApplicationDetails.accessTokenType}
-              name="accessTokenType"
-              size="small"
-            />
-          </div>
-          <div className={styles["content-item"]}>
-            <span className={styles["label"]}>Tip Aplikacije:</span>
-            <SelectDropdown
-              className={styles["input-field"]}
-              onChange={handleDropdownChange}
-              options={applicationTypeOptions}
-              value={selectedApplicationDetails.appType}
-              name="appType"
-              size="small"
-            />
-          </div>
-          <div className={styles["content-item"]}>
-            <span className={styles["label"]}>Metod Autentifikacije:</span>
-            <SelectDropdown
-              className={styles["input-field"]}
-              onChange={handleDropdownChange}
-              options={applicationClientAuthMethodOptions}
-              value={selectedApplicationDetails.authMethodType}
-              name="authMethodType"
-              size="small"
-            />
-          </div>
-          <div className={styles["content-item"]}>
-            <span className={styles["label"]}>
-              Vremensko Odstupanje (sekundi):
-            </span>
             <TextField
-              className={styles["input-field"]}
-              id="outlined-basic"
+              label="Projekat"
               variant="outlined"
               size="small"
               fullWidth
+              disabled
+              value={selectedProject?.name || ""}
+            />
+            <TextField
+              name="clockSkew"
+              label="Vremensko odstupanje (sekundi)"
+              variant="outlined"
+              size="small"
+              fullWidth
+              type="number"
               onChange={handleInputChange}
               value={selectedApplicationDetails.clockSkew}
-              name="clockSkew"
+              helperText="Dozvoljeno vremensko odstupanje za validaciju tokena"
             />
-          </div>
-          <div className={styles["content-item"]}>
-            <span className={styles["label"]}>Razvojni Režim:</span>
-            <Checkbox
-              className={styles["input-field"]}
-              size="medium"
-              onChange={handleInputChange}
-              name="devMode"
-              checked={selectedApplicationDetails.devMode}
-              disableRipple
-            />
-          </div>
-          <div className={styles["content-item"]}>
-            <span className={styles["label"]}>Tipovi Odobrenja:</span>
-            <MultipleSelect<ApplicationGrantType>
-              styles={styles}
-              setFunction={setSelectedApplicationDetails}
-              objectState={selectedApplicationDetails}
-              options={applicationGrantTypeOptions}
-              name="grantTypes"
-            />
-          </div>
-          <div className={styles["content-item"]}>
-            <span className={styles["label"]}>Dodavanje Uloga u ID Token:</span>
-            <Checkbox
-              className={styles["input-field"]}
-              size="medium"
-              onChange={handleInputChange}
-              name="idTokenRoleAssertion"
-              checked={selectedApplicationDetails.idTokenRoleAssertion}
-              disableRipple
-            />
-          </div>
-          <div className={styles["content-item"]}>
-            <span className={styles["label"]}>
-              Dodavanje Korisničkih Informacija u ID Token:
-            </span>
-            <Checkbox
-              className={styles["input-field"]}
-              size="medium"
-              onChange={handleInputChange}
-              name="idTokenUserinfoAssertion"
-              checked={selectedApplicationDetails.idTokenUserinfoAssertion}
-              disableRipple
-            />
-          </div>
-          <div className={styles["content-item"]}>
-            <span className={styles["label"]}>Response Tipovi:</span>
-            <MultipleSelect<ApplicationResponseType>
-              styles={styles}
-              setFunction={setSelectedApplicationDetails}
-              objectState={selectedApplicationDetails}
-              options={applicationResponseTypeOptions}
-              name="responseTypes"
-            />
-          </div>
-          <div className={styles["content-item"]}>
-            <span className={styles["label"]}>
-              Preskoči Stranicu Uspešne Prijave:
-            </span>
-            <Checkbox
-              className={styles["input-field"]}
-              size="medium"
-              onChange={handleInputChange}
-              name="skipNativeAppSuccessPage"
-              checked={selectedApplicationDetails.skipNativeAppSuccessPage}
-              disableRipple
-            />
-          </div>
-          <div className={styles["content-item"]}>
-            <span className={styles["label"]}>URI-jevi za Preusmeravanje:</span>
-            <ChipInput
-              styles={styles}
-              onItemsChange={(newItems: string[]) =>
-                setSelectedApplicationDetails((prev) => ({
-                  ...prev,
-                  redirectUris: newItems,
-                }))
+          </Stack>
+
+          <Divider className={styles["divider"]} />
+
+          <Typography variant="h6" gutterBottom className={styles["section-title"]}>
+            Konfiguracija aplikacije
+          </Typography>
+          <Stack spacing={2.5}>
+            <FormControl fullWidth size="small" disabled={isEdit}>
+              <InputLabel>Tip aplikacije</InputLabel>
+              <Select
+                value={selectedApplicationDetails.appType}
+                label="Tip aplikacije"
+                onChange={(e) => handleSelectChange("appType", e.target.value)}
+              >
+                {applicationTypeOptions.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </Select>
+              {isEdit && (
+                <Typography variant="caption" color="text.secondary" className={styles["caption-text"]}>
+                  Tip aplikacije se ne može menjati nakon kreiranja
+                </Typography>
+              )}
+            </FormControl>
+
+            {appTypeHelpText && (
+              <Alert severity="info" className={styles["alert-text"]}>
+                {appTypeHelpText}
+              </Alert>
+            )}
+
+            <FormControl fullWidth size="small">
+              <InputLabel>Metod autentifikacije</InputLabel>
+              <Select
+                value={selectedApplicationDetails.authMethodType}
+                label="Metod autentifikacije"
+                onChange={(e) =>
+                  handleSelectChange("authMethodType", e.target.value)
+                }
+              >
+                {filteredAuthMethodOptions.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <FormControlLabel
+              control={
+                <Checkbox
+                  name="devMode"
+                  checked={selectedApplicationDetails.devMode}
+                  onChange={handleInputChange}
+                />
               }
-              selectedItems={selectedApplicationDetails.redirectUris}
+              label="Razvojni režim"
             />
-          </div>
-          <div className={styles["content-item"]}>
-            <span className={styles["label"]}>URI-jevi nakon Odjave:</span>
-            <ChipInput
-              styles={styles}
-              onItemsChange={(newItems: string[]) =>
-                setSelectedApplicationDetails((prev) => ({
-                  ...prev,
-                  postLogoutRedirectUris: newItems,
-                }))
+          </Stack>
+
+          <Divider className={styles["divider"]} />
+
+          <Typography variant="h6" gutterBottom className={styles["section-title"]}>
+            Konfiguracija tokena
+          </Typography>
+          <Stack spacing={2.5}>
+            <FormControl fullWidth size="small">
+              <InputLabel>Tip tokena za pristup</InputLabel>
+              <Select
+                value={selectedApplicationDetails.accessTokenType}
+                label="Tip tokena za pristup"
+                onChange={(e) =>
+                  handleSelectChange("accessTokenType", e.target.value)
+                }
+              >
+                {applicationAccessTokenTypeOptions.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <FormControlLabel
+              control={
+                <Checkbox
+                  name="accessTokenRoleAssertion"
+                  checked={selectedApplicationDetails.accessTokenRoleAssertion}
+                  onChange={handleInputChange}
+                />
               }
-              selectedItems={selectedApplicationDetails.postLogoutRedirectUris}
+              label="Dodavanje uloga u token za pristup"
             />
-          </div>
-          <div className={styles["content-item"]}>
-            <span className={styles["label"]}>Dodatni Izvori:</span>
-            <ChipInput
-              styles={styles}
-              onItemsChange={(newItems: string[]) =>
-                setSelectedApplicationDetails((prev) => ({
-                  ...prev,
-                  additionalOrigins: newItems,
-                }))
+
+            <FormControlLabel
+              control={
+                <Checkbox
+                  name="idTokenRoleAssertion"
+                  checked={selectedApplicationDetails.idTokenRoleAssertion}
+                  onChange={handleInputChange}
+                />
               }
-              selectedItems={selectedApplicationDetails.additionalOrigins}
+              label="Dodavanje uloga u ID token"
             />
-          </div>
-        </div>
+
+            <FormControlLabel
+              control={
+                <Checkbox
+                  name="idTokenUserinfoAssertion"
+                  checked={selectedApplicationDetails.idTokenUserinfoAssertion}
+                  onChange={handleInputChange}
+                />
+              }
+              label="Dodavanje korisničkih informacija u ID token"
+            />
+          </Stack>
+
+          <Divider className={styles["divider"]} />
+
+          <Typography variant="h6" gutterBottom className={styles["section-title"]}>
+            OAuth/OIDC podešavanja
+          </Typography>
+          <Stack spacing={2.5}>
+            {deprecationWarning && (
+              <Alert severity="warning" className={styles["alert-text"]}>
+                {deprecationWarning}
+              </Alert>
+            )}
+
+            {responseTypeWarning && (
+              <Alert severity="error" className={styles["alert-text"]}>
+                {responseTypeWarning}
+              </Alert>
+            )}
+
+            {grantResponseCompatibilityWarning && (
+              <Alert severity="error" className={styles["alert-text"]}>
+                {grantResponseCompatibilityWarning}
+              </Alert>
+            )}
+
+            <Box>
+              <Typography variant="body2" className={styles["field-label"]}>
+                Tipovi odobrenja
+              </Typography>
+              <MultipleSelect<ApplicationGrantType>
+                styles={styles}
+                setFunction={setSelectedApplicationDetails}
+                objectState={selectedApplicationDetails}
+                options={filteredGrantTypeOptions}
+                name="grantTypes"
+              />
+              <Typography variant="caption" color="text.secondary" className={styles["caption-text"]}>
+                Preporuka: Authorization Code + Refresh Token (PKCE)
+              </Typography>
+            </Box>
+
+            <Box>
+              <Typography variant="body2" className={styles["field-label"]}>
+                Response tipovi
+              </Typography>
+              <MultipleSelect<ApplicationResponseType>
+                styles={styles}
+                setFunction={setSelectedApplicationDetails}
+                objectState={selectedApplicationDetails}
+                options={filteredResponseTypeOptions}
+                name="responseTypes"
+              />
+              <Typography variant="caption" color="text.secondary" className={styles["caption-text"]}>
+                Preporuka: CODE (Authorization Code flow)
+              </Typography>
+            </Box>
+
+            <FormControlLabel
+              control={
+                <Checkbox
+                  name="skipNativeAppSuccessPage"
+                  checked={selectedApplicationDetails.skipNativeAppSuccessPage}
+                  onChange={handleInputChange}
+                />
+              }
+              label="Preskoči stranicu uspešne prijave"
+            />
+          </Stack>
+
+          <Divider className={styles["divider"]} />
+
+          <Typography variant="h6" gutterBottom className={styles["section-title"]}>
+            URI konfiguracija
+          </Typography>
+          <Stack spacing={2.5}>
+            <Box>
+              <Typography variant="body2" className={styles["field-label"]}>
+                URI-jevi za preusmeravanje
+              </Typography>
+              <ChipInput
+                styles={styles}
+                onItemsChange={(newItems: string[]) =>
+                  setSelectedApplicationDetails((prev) => ({
+                    ...prev,
+                    redirectUris: newItems,
+                  }))
+                }
+                selectedItems={selectedApplicationDetails.redirectUris}
+              />
+            </Box>
+
+            <Box>
+              <Typography variant="body2" className={styles["field-label"]}>
+                URI-jevi nakon odjave
+              </Typography>
+              <ChipInput
+                styles={styles}
+                onItemsChange={(newItems: string[]) =>
+                  setSelectedApplicationDetails((prev) => ({
+                    ...prev,
+                    postLogoutRedirectUris: newItems,
+                  }))
+                }
+                selectedItems={selectedApplicationDetails.postLogoutRedirectUris}
+              />
+            </Box>
+
+            <Box>
+              <Typography variant="body2" className={styles["field-label"]}>
+                Dodatni izvori
+              </Typography>
+              <ChipInput
+                styles={styles}
+                onItemsChange={(newItems: string[]) =>
+                  setSelectedApplicationDetails((prev) => ({
+                    ...prev,
+                    additionalOrigins: newItems,
+                  }))
+                }
+                selectedItems={selectedApplicationDetails.additionalOrigins}
+              />
+            </Box>
+          </Stack>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 };
 
