@@ -23,7 +23,6 @@ const ProjectRoles = () => {
   const [inputValue, setInputValue] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const [isAddingRole, setIsAddingRole] = useState(false);
-  const [isRemovingRole, setIsRemovingRole] = useState(false);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const roleOptions = searchOptions
@@ -78,7 +77,6 @@ const ProjectRoles = () => {
   const handleRemoveRole = async (id: number) => {
     if (!selectedProjectId) return;
 
-    setIsRemovingRole(true);
     try {
       await projectApi.removeRoleFromProject(selectedProjectId, id);
       setProjectRoles((prev) => prev.filter((x) => x.id !== id));
@@ -87,7 +85,6 @@ const ProjectRoles = () => {
       console.error("Failed to remove role from project:", error);
       toast.error("Greška pri uklanjanju uloge");
     } finally {
-      setIsRemovingRole(false);
       handleCloseConfirm();
     }
   };

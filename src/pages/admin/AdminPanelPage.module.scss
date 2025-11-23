@@ -1,0 +1,41 @@
+@use '../../styles/variables' as *;
+
+.loading-state {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: $spacing-10;
+    min-height: 200px;
+}
+
+// Dialog styles
+.dialog-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 16px;
+}
+
+.dialog-close-button {
+    color: rgba(0, 0, 0, 0.54);
+
+    &:hover {
+        background-color: rgba(0, 0, 0, 0.04);
+    }
+}
+
+.dialog-content {
+    padding-top: 8px;
+}
+
+.dialog-description {
+    color: $color-text-secondary;
+    margin-bottom: $spacing-2;
+    font-size: 0.875rem;
+}
+
+.dialog-actions {
+    padding: 16px;
+    gap: 8px;
+    justify-content: flex-end;
+}

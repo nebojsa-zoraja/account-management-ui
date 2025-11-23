@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import pageStyles from "../../styles/PageStyles.module.scss";
 import styles from "./RolesPage.module.scss";
 import PageTitle from "../../components/pageTitle/PageTitle";
@@ -25,7 +25,6 @@ const RolesPage = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isImpactDialogOpen, setIsImpactDialogOpen] = useState(false);
-  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const {
     isEdit,

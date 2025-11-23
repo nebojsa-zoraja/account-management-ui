@@ -1,5 +1,3 @@
-import { IBaseEntity } from "../../../models/entities/IBaseEntity";
-
-export interface ITableHeader<T extends IBaseEntity> {
+export interface ITableHeader {
   headerColumns: string[];
 }

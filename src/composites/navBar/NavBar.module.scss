@@ -1,4 +1,4 @@
-@import '../../styles/variables';
+@use '../../styles/variables' as *;
 
 .navbar-container {
     background: linear-gradient(135deg, #2c2c2c 0%, #3a3a3a 100%);
@@ -150,7 +150,10 @@
 }
 
 .logout-button {
-    color: #fff;
+
+    .logout-icon {
+        color: #fff;
+    }
 
     &:hover {
         background-color: rgba(255, 255, 255, 0.1);

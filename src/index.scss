@@ -3,7 +3,7 @@
  * Import SASS variables and define global styles
  */
 
-@import './styles/variables';
+@use './styles/variables' as *;
 
 // ==========================================
 // RESET & BASE STYLES

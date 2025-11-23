@@ -55,7 +55,7 @@ const ManageUser = () => {
   };
 
   const handleSelectChange = (name: string, value: any) => {
-    let newValue = name === "isDeleted" ? Boolean(value) : value;
+    const newValue = name === "isDeleted" ? Boolean(value) : value;
     setSelectedUser((user) => ({
       ...user,
       [name]: newValue,

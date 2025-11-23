@@ -42,7 +42,6 @@ const UserPage = () => {
   const [isImporting, setIsImporting] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const fetchUsers = useCallback(

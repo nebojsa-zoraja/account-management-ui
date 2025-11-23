@@ -16,7 +16,7 @@ import ConfirmationDialog from "../../components/confirmationDialog/Confirmation
 const GroupsPage = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isPermissionsOpen, setIsPermissionsOpen] = useState(false);
-  const [dialogContent, setDialogContent] = useState<GroupsDialogContent>(
+  const [dialogContent] = useState<GroupsDialogContent>(
     groupDialogContentDefault
   );
   const [groups, setGroups] = useState<GroupWithProjectName[]>([]);
@@ -27,7 +27,6 @@ const GroupsPage = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const [groupToDelete, setGroupToDelete] = useState<GroupWithProjectName | null>(null);
   const { isEdit, setIsEdit, setSelectedGroupId, setSelectedGroup, selectedGroup, setIsDetailsLoading } = useGroupStore();
@@ -161,7 +160,6 @@ const GroupsPage = () => {
   };
 
   const handleConfirmDelete = async (groupId: number) => {
-    setIsDeleting(true);
     try {
       await groupApi.deleteGroup(groupId);
       toast.success("Grupa uspešno obrisana");
@@ -170,7 +168,6 @@ const GroupsPage = () => {
       console.error("Error deleting group:", err);
       toast.error("Greška pri brisanju grupe");
     } finally {
-      setIsDeleting(false);
       handleCloseDeleteConfirm();
     }
   };

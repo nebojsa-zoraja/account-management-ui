@@ -27,7 +27,6 @@ const GroupUserTable: React.FC<GroupUserTableProps> = ({ groupId }) => {
   const [isSearching, setIsSearching] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isAddingUser, setIsAddingUser] = useState(false);
-  const [isRemovingUser, setIsRemovingUser] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [userToRemove, setUserToRemove] = useState<number | null>(null);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -124,7 +123,6 @@ const GroupUserTable: React.FC<GroupUserTableProps> = ({ groupId }) => {
   };
 
   const handleRemoveUser = async (userId: number) => {
-    setIsRemovingUser(true);
     try {
       await groupApi.removeUsersFromGroup(groupId, [userId]);
       setGroupUsers((prev) => prev.filter((u) => u.id !== userId));
@@ -133,7 +131,6 @@ const GroupUserTable: React.FC<GroupUserTableProps> = ({ groupId }) => {
       console.error("Failed to remove user from group:", error);
       toast.error("Greška pri uklanjanju korisnika");
     } finally {
-      setIsRemovingUser(false);
       handleCloseConfirm();
     }
   };
