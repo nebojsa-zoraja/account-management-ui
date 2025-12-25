@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, ReactNode } from "react";
 import { TextField, Button, Box, InputAdornment, IconButton, Tooltip } from "@mui/material";
 import { FiSearch, FiX } from "react-icons/fi";
 import RefreshIcon from "@mui/icons-material/Refresh";
@@ -14,6 +14,7 @@ interface SearchBarProps {
   onImport?: () => void;
   isImporting?: boolean;
   showImportButton?: boolean;
+  extraContent?: ReactNode;
 }
 
 const SearchBar = ({
@@ -25,6 +26,7 @@ const SearchBar = ({
   onImport,
   isImporting = false,
   showImportButton = false,
+  extraContent,
 }: SearchBarProps) => {
   const [searchQuery, setSearchQuery] = useState(initialValue);
 
@@ -78,8 +80,9 @@ const SearchBar = ({
         startIcon={<SearchIcon />}
         className={styles["search-button"]}
       >
-        Search
+        Pretraži
       </Button>
+      {extraContent}
       {showImportButton && onImport && (
         <Button
           variant="outlined"

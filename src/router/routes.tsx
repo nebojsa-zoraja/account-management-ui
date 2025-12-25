@@ -4,7 +4,9 @@ import ProjectsPage from "../pages/projects/ProjectsPage";
 import RolesPage from "../pages/roles/RolesPage";
 import UserPage from "../pages/users/UserPage";
 import LoginPage from "../pages/login/LoginPage";
+import AdminPanelPage from "../pages/admin/AdminPanelPage";
 import { Navigate } from "react-router-dom";
+import ProtectedRoute from "./ProtectedRoute";
 
 export const routes = [
   {
@@ -13,7 +15,11 @@ export const routes = [
   },
   {
     path: "/",
-    element: <App />,
+    element: (
+      <ProtectedRoute>
+        <App />
+      </ProtectedRoute>
+    ),
     children: [
       {
         index: true,
@@ -39,6 +45,14 @@ export const routes = [
       {
         path: "groups",
         element: <GroupsPage />,
+      },
+      {
+        path: "admin",
+        element: (
+          <ProtectedRoute requireAdmin>
+            <AdminPanelPage />
+          </ProtectedRoute>
+        ),
       },
     ],
   },

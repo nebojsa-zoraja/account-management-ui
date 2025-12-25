@@ -25,7 +25,6 @@ const ManageGroup = () => {
   const [projects, setProjects] = useState<{ label: string; value: number }[]>(
     []
   );
-  const [isLoadingProjects, setIsLoadingProjects] = useState(false);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -44,7 +43,6 @@ const ManageGroup = () => {
 
   useEffect(() => {
     const fetchProjects = async () => {
-      setIsLoadingProjects(true);
       try {
         const response = await projectApi.getAllProjects({ pageSize: 1000 });
         const projectList = response.items.map((x) => ({
@@ -55,8 +53,6 @@ const ManageGroup = () => {
       } catch (error) {
         console.error("Failed to fetch projects:", error);
         toast.error("Greška pri učitavanju projekata");
-      } finally {
-        setIsLoadingProjects(false);
       }
     };
 

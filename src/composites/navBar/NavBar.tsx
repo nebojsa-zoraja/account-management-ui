@@ -1,24 +1,37 @@
 import styles from "./NavBar.module.scss";
-import { Tabs } from "../../utils/tabs/Tabs";
+import { tabs } from "../../utils/tabs/Tabs";
 import { useNavigate, useLocation } from "react-router-dom";
 import { IconButton, Tooltip, Avatar, Box } from "@mui/material";
 import { FiLogOut } from "react-icons/fi";
 import useAuthStore from "../../store/authStore/AuthStore";
+import { authApi } from "../../api/authApi";
 
 const NavBar = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { username, logout } = useAuthStore();
+  const { user, accessToken, logout } = useAuthStore();
 
   const isActiveTab = (route: string) => {
-    return location.pathname === route;
+    return (
+      location.pathname === route || location.pathname.startsWith(route + "/")
+    );
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      if (accessToken) {
+        await authApi.logout(accessToken);
+      }
+    } catch (error) {
+      // Continue with logout even if API call fails
+      console.error("Logout API call failed:", error);
+    } finally {
+      logout();
+      navigate("/login");
+    }
   };
 
+  // Add admin tab if user is admin
   const LogoutIcon = FiLogOut as any;
 
   return (
@@ -27,23 +40,25 @@ const NavBar = () => {
         <div className={styles["navbar-brand"]}>
           <div className={styles["tiac-logo"]}></div>
           <div className={styles["brand-text"]}>
-            <div className={styles["brand-title"]}>Account Management</div>
+            <div className={styles["brand-title"]}>Upravljanje nalozima</div>
           </div>
         </div>
         <div className={styles["navbar-user"]}>
           <Box className={styles["user-container"]}>
             <Box className={styles["avatar-container"]}>
               <Avatar className={styles["avatar"]}>
-                {username?.charAt(0).toUpperCase()}
+                {`${user?.firstName?.charAt(0)}${user?.lastName?.charAt(0)}`}
               </Avatar>
-              <span className={styles["username-text"]}>{username}</span>
+              <span
+                className={styles["username-text"]}
+              >{`${user?.firstName} ${user?.lastName}`}</span>
             </Box>
-            <Tooltip title="Logout">
+            <Tooltip title="Odjava">
               <IconButton
                 onClick={handleLogout}
                 className={styles["logout-button"]}
               >
-                <LogoutIcon size={20} />
+                <LogoutIcon className={styles["logout-icon"]} size={20} />
               </IconButton>
             </Tooltip>
           </Box>
@@ -54,7 +69,7 @@ const NavBar = () => {
         role="navigation"
         aria-label="Main navigation"
       >
-        {Tabs.map((tab, index) => {
+        {tabs.map((tab, index) => {
           const isActive = isActiveTab(tab.route);
           return (
             <button

@@ -1,6 +1,6 @@
 import { ITabDefinition } from "./ITabDefinition";
 
-export const Tabs: ITabDefinition[] = [
+export const tabs: ITabDefinition[] = [
   {
     label: "Korisnici",
     route: "/users",
@@ -17,4 +17,5 @@ export const Tabs: ITabDefinition[] = [
     label: "Grupe",
     route: "/groups",
   },
+  { label: "Admin opcije", route: "/admin" },
 ];

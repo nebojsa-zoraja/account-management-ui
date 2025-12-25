@@ -1,36 +1,58 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./LoginPage.module.scss";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { TextField, Button, CircularProgress, Alert } from "@mui/material";
 import useAuthStore from "../../store/authStore/AuthStore";
+import { authApi } from "../../api/authApi";
+import { AxiosError } from "axios";
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const login = useAuthStore((state) => state.login);
+  const location = useLocation();
+  const { login, isAuthenticated, isTokenExpired } = useAuthStore();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated && !isTokenExpired()) {
+      const from = location.state?.from?.pathname || "/users";
+      navigate(from, { replace: true });
+    }
+  }, [isAuthenticated, isTokenExpired, navigate, location]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setIsLoading(true);
 
-    // TODO: Implement actual authentication logic
-    setTimeout(() => {
-      if (username && password) {
-        // Simulate successful login
-        const mockToken = "mock-jwt-token-" + Date.now();
-        const mockUserId = 1;
-        login(username, mockToken, mockUserId);
-        console.log("Login successful");
-        navigate("/users");
-      } else {
-        setError("Please enter both username and password");
-      }
+    try {
+      const response = await authApi.login({ username, password });
+
+      const user = {
+        userId: response.userId,
+        username: response.username,
+        email: response.email,
+        firstName: response.firstName,
+        lastName: response.lastName,
+        isAdmin: response.isAdmin,
+      };
+
+      login(user, response.accessToken, response.accessTokenExpiration);
+
+      const from = location.state?.from?.pathname || "/users";
+      navigate(from, { replace: true });
+    } catch (err) {
+      const axiosError = err as AxiosError<{ message?: string }>;
+      const errorMessage =
+        axiosError.response?.data?.message ||
+        "Pogrešno korisničko ime ili lozinka. Samo administratori mogu da se prijave.";
+      setError(errorMessage);
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -40,19 +62,19 @@ const LoginPage = () => {
           <div className={styles["logo-container"]}>
             <div className={styles["tiac-logo"]}></div>
           </div>
-          <h2 className={styles["app-title"]}>Account Management System</h2>
-          <p className={styles["app-subtitle"]}>Internal Access Portal</p>
+          <h2 className={styles["app-title"]}>Sistem za upravljanje nalozima</h2>
+          <p className={styles["app-subtitle"]}>Portal za interni pristup</p>
         </div>
 
         <form className={styles["login-form"]} onSubmit={handleSubmit}>
           <TextField
             id="username"
-            label="Username"
+            label="Korisničko ime"
             type="text"
             fullWidth
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            placeholder="Enter your username"
+            placeholder="Unesite korisničko ime"
             autoComplete="username"
             disabled={isLoading}
             required
@@ -62,12 +84,12 @@ const LoginPage = () => {
 
           <TextField
             id="password"
-            label="Password"
+            label="Lozinka"
             type="password"
             fullWidth
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Enter your password"
+            placeholder="Unesite lozinku"
             autoComplete="current-password"
             disabled={isLoading}
             required
@@ -91,16 +113,16 @@ const LoginPage = () => {
             {isLoading ? (
               <>
                 <CircularProgress size={20} color="inherit" className={styles["progress-spinner"]} />
-                Signing in...
+                Prijavljivanje...
               </>
             ) : (
-              "Sign In"
+              "Prijavi se"
             )}
           </Button>
         </form>
 
         <div className={styles["login-footer"]}>
-          <p className={styles["footer-text"]}>For authorized personnel only</p>
+          <p className={styles["footer-text"]}>Samo za ovlašćeno osoblje</p>
         </div>
       </div>
     </div>
